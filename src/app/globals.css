@@ -1,0 +1,169 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+/* ---------------------------------------------------------------
+   Design tokens — Black + Emerald Green theme palette.
+   Supports both Dark Mode & Light Mode seamlessly.
+----------------------------------------------------------------*/
+:root,
+.dark {
+  --background: #030706;
+  --surface: #0a120e;
+  --surface-2: #0f1c16;
+  --border: rgba(16, 185, 129, 0.12);
+  --border-strong: rgba(16, 185, 129, 0.25);
+
+  --foreground: #f0fdf4;
+  --muted: #869e92;
+  --muted-2: #4f695b;
+
+  --primary: #10b981;
+  --primary-foreground: #030706;
+  --secondary: #059669;
+  --accent: #10b981;
+
+  --radius: 0.75rem;
+
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  color-scheme: dark;
+}
+
+.light {
+  --background: #f4fbf7;
+  --surface: #ffffff;
+  --surface-2: #e6f4ed;
+  --border: rgba(16, 185, 129, 0.25);
+  --border-strong: rgba(16, 185, 129, 0.45);
+
+  --foreground: #04120a;
+  --muted: #2d4538;
+  --muted-2: #486655;
+
+  --primary: #059669;
+  --primary-foreground: #ffffff;
+  --secondary: #047857;
+  --accent: #059669;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-marquee: marquee 220s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 220s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-[#10b981]-x: gradient-x 8s ease infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-14px); }
+  }
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 6rem;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--foreground) 0%, var(--foreground) 40%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.glass {
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
