@@ -21,7 +21,7 @@ export function Education() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
               My{" "}
               <span className="relative inline-block text-[#10b981]">
                 Education
@@ -47,7 +47,7 @@ export function Education() {
                   }`}
                 >
                   {/* Glowing Node Dot on Timeline */}
-                  <div className="absolute left-4 top-5 z-10 flex size-4 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[#10b981] bg-[#030706] shadow-[0_0_10px_#10b981] sm:left-1/2">
+                  <div className="absolute left-4 top-5 z-10 flex size-4 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[#10b981] bg-background shadow-[0_0_10px_#10b981] sm:left-1/2">
                     <div className="size-1 rounded-full bg-[#10b981]" />
                   </div>
 
@@ -58,7 +58,7 @@ export function Education() {
                       whileInView={{ opacity: 1, x: 0, y: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
                       transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
-                      className="group relative rounded-2xl border border-white/10 bg-[#0a120e]/90 p-6 sm:p-7 backdrop-blur-md transition-all duration-300 hover:border-[#10b981]/40 hover:bg-[#0f1c16] hover:shadow-[0_0_25px_-5px_rgba(16,185,129,0.2)]"
+                      className="group relative rounded-2xl border border-border bg-surface/90 p-6 sm:p-7 backdrop-blur-md transition-all duration-300 hover:border-[#10b981]/40 hover:bg-surface-2 hover:shadow-[0_0_25px_-5px_rgba(16,185,129,0.2)]"
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#10b981]/10 border border-[#10b981]/30 text-[#10b981] shadow-md transition-transform group-hover:scale-110">
@@ -77,7 +77,7 @@ export function Education() {
                               • {item.period}
                             </span>
                           </div>
-                          <h3 className="mt-1 text-xl font-bold tracking-tight text-white">
+                          <h3 className="mt-1 text-xl font-bold tracking-tight text-foreground">
                             {item.degree}
                           </h3>
                         </div>
