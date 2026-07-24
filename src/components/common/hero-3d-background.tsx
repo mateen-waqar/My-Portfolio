@@ -9,22 +9,44 @@ export function Hero3DBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let isVisible = true; // in-viewport (IntersectionObserver)
+    let isTabActive = document.visibilityState === "visible";
 
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    // Cap DPR so we're not rendering 3x pixels on high-density screens for zero visual gain
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const applySize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
+    applySize();
 
+    let resizeRAF = 0;
+    const handleResize = () => {
+      // debounce resize to next frame instead of doing it synchronously on every resize event
+      cancelAnimationFrame(resizeRAF);
+      resizeRAF = requestAnimationFrame(applySize);
+    };
     window.addEventListener("resize", handleResize);
 
-    // Tech Badges
+    // Reduce node count on smaller / lower-power screens (mobile)
+    const isSmallScreen = width < 768;
+    const nodeCount = isSmallScreen ? 26 : 42;
+    const maxConnDist = 150;
+    const maxConnDistSq = maxConnDist * maxConnDist;
+
     const techBadges = [
       "< AI Agent >",
       "{ TypeScript }",
@@ -42,8 +64,6 @@ export function Hero3DBackground() {
       "[ Supabase ]",
     ];
 
-    // 3D Nodes Network
-    const nodeCount = 60;
     const nodes = Array.from({ length: nodeCount }, (_, i) => ({
       x: (Math.random() - 0.5) * width * 1.4,
       y: (Math.random() - 0.5) * height * 1.4,
@@ -56,15 +76,13 @@ export function Hero3DBackground() {
       pulse: Math.random() * Math.PI * 2,
     }));
 
-    // Data packets
-    const packets = Array.from({ length: 18 }, () => ({
+    const packets = Array.from({ length: 12 }, () => ({
       from: Math.floor(Math.random() * nodeCount),
       to: Math.floor(Math.random() * nodeCount),
       progress: Math.random(),
       speed: Math.random() * 0.012 + 0.006,
     }));
 
-    // Target and smoothed mouse rotation variables
     let targetRotX = 0;
     let targetRotY = 0;
     let currentRotX = 0;
@@ -72,26 +90,58 @@ export function Hero3DBackground() {
     let autoAngle = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Normalize mouse coordinates from center (-1 to 1)
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = (e.clientY / window.innerHeight) * 2 - 1;
-
-      targetRotY = nx * 0.45; // Yaw rotation around Y axis
-      targetRotX = -ny * 0.45; // Pitch rotation around X axis
+      targetRotY = nx * 0.45;
+      targetRotX = -ny * 0.45;
     };
-
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
+    // Pause entirely when the hero scrolls out of view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true;
+        if (isVisible && isTabActive) start();
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
+    const handleVisibilityChange = () => {
+      isTabActive = document.visibilityState === "visible";
+      if (isTabActive && isVisible) start();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const fov = 400;
+    const glowColor = "#10b981";
+
+    // Pre-format font strings once per scale bucket instead of every frame
+    const fontCache: Record<number, string> = {};
+    const getFont = (scale: number) => {
+      const size = Math.max(10, Math.floor(13 * scale));
+      if (!fontCache[size]) fontCache[size] = `bold ${size}px monospace`;
+      return fontCache[size];
+    };
+
+    const projectedNodes: {
+      x: number;
+      y: number;
+      z: number;
+      scale: number;
+      badge: string;
+      isMajor: boolean;
+      pulse: number;
+    }[] = [];
 
     const render = () => {
+      if (!isVisible || !isTabActive) return; // stop the loop; observers will restart it
+
       ctx.clearRect(0, 0, width, height);
 
-      // Buttery smooth lerp (exponential smoothing) for cursor movement
       currentRotX += (targetRotX - currentRotX) * 0.04;
       currentRotY += (targetRotY - currentRotY) * 0.04;
 
-      // Continuous subtle ambient spin
       autoAngle += 0.002;
       const totalRotY = currentRotY + Math.sin(autoAngle) * 0.15;
       const totalRotX = currentRotX + Math.cos(autoAngle * 0.7) * 0.1;
@@ -99,38 +149,34 @@ export function Hero3DBackground() {
       const cx = width / 2;
       const cy = height / 2;
 
-      // Project & update 3D nodes
-      const projectedNodes: { x: number; y: number; z: number; scale: number; badge: string; isMajor: boolean; pulse: number }[] = [];
+      projectedNodes.length = 0;
 
-      nodes.forEach((node) => {
+      const cosX = Math.cos(totalRotX);
+      const sinX = Math.sin(totalRotX);
+      const cosY = Math.cos(totalRotY);
+      const sinY = Math.sin(totalRotY);
+
+      for (const node of nodes) {
         node.x += node.vx;
         node.y += node.vy;
         node.z += node.vz;
         node.pulse += 0.035;
 
-        // Wrap 3D boundaries smoothly
         if (Math.abs(node.x) > width * 0.75) node.vx *= -1;
         if (Math.abs(node.y) > height * 0.75) node.vy *= -1;
         if (Math.abs(node.z) > 350) node.vz *= -1;
 
-        // 3D Rotations around X & Y axes with smoothed mouse coords
-        const cosX = Math.cos(totalRotX);
-        const sinX = Math.sin(totalRotX);
         const y1 = node.y * cosX - node.z * sinX;
         const z1 = node.y * sinX + node.z * cosX;
 
-        const cosY = Math.cos(totalRotY);
-        const sinY = Math.sin(totalRotY);
         const x2 = node.x * cosY + z1 * sinY;
         const z2 = -node.x * sinY + z1 * cosY;
 
         const scale = fov / (fov + z2 + 300);
         if (scale > 0) {
-          const px = cx + x2 * scale;
-          const py = cy + y1 * scale;
           projectedNodes.push({
-            x: px,
-            y: py,
+            x: cx + x2 * scale,
+            y: cy + y1 * scale,
             z: z2,
             scale,
             badge: node.badge,
@@ -138,23 +184,24 @@ export function Hero3DBackground() {
             pulse: node.pulse,
           });
         }
-      });
+      }
 
-      // 1. Draw 3D Connecting Grid Lines
+      // 1. Connecting lines — NO shadowBlur here (this was the single biggest cost).
+      // Glow is instead achieved once via a single ctx.shadowBlur pass on the nodes/packets only.
       ctx.lineWidth = 1.2;
+      ctx.shadowBlur = 0;
       for (let i = 0; i < projectedNodes.length; i++) {
+        const n1 = projectedNodes[i];
         for (let j = i + 1; j < projectedNodes.length; j++) {
-          const n1 = projectedNodes[i];
           const n2 = projectedNodes[j];
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (dist < 170) {
-            const alpha = (1 - dist / 170) * 0.55 * Math.min(n1.scale, n2.scale);
+          if (distSq < maxConnDistSq) {
+            const dist = Math.sqrt(distSq);
+            const alpha = (1 - dist / maxConnDist) * 0.5 * Math.min(n1.scale, n2.scale);
             ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = "#10b981";
             ctx.beginPath();
             ctx.moveTo(n1.x, n1.y);
             ctx.lineTo(n2.x, n2.y);
@@ -163,7 +210,10 @@ export function Hero3DBackground() {
         }
       }
 
-      // 2. Draw Traveling Data Packets
+      // 2. Data packets — glow applied, but only ~12 draw calls, so it's cheap.
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = glowColor;
+      ctx.fillStyle = glowColor;
       packets.forEach((p) => {
         p.progress += p.speed;
         if (p.progress >= 1) {
@@ -177,49 +227,49 @@ export function Hero3DBackground() {
         if (n1 && n2) {
           const pkX = n1.x + (n2.x - n1.x) * p.progress;
           const pkY = n1.y + (n2.y - n1.y) * p.progress;
-
           ctx.beginPath();
           ctx.arc(pkX, pkY, 3.5 * n1.scale, 0, Math.PI * 2);
-          ctx.fillStyle = "#10b981";
-          ctx.shadowBlur = 16;
-          ctx.shadowColor = "#10b981";
           ctx.fill();
         }
       });
 
-      // 3. Draw 3D Tech Nodes & Badges
-      projectedNodes.sort((a, b) => b.z - a.z); // Depth sorting
+      // 3. Nodes & badges
+      projectedNodes.sort((a, b) => b.z - a.z);
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = glowColor;
       projectedNodes.forEach((node) => {
         const alpha = Math.min(1, Math.max(0.25, node.scale * 0.9));
         const pulseFactor = Math.sin(node.pulse) * 1.5 + 4.5;
 
-        // Glowing Core Dot
         ctx.beginPath();
         ctx.arc(node.x, node.y, (node.isMajor ? pulseFactor : 3) * node.scale, 0, Math.PI * 2);
-        ctx.fillStyle = node.isMajor ? "#10b981" : "rgba(5, 150, 105, 0.95)";
-        ctx.shadowBlur = node.isMajor ? 18 : 10;
-        ctx.shadowColor = "#10b981";
+        ctx.fillStyle = node.isMajor ? glowColor : "rgba(5, 150, 105, 0.95)";
         ctx.fill();
 
-        // Tech Badge Label
         if (node.isMajor) {
-          ctx.font = `bold ${Math.max(10, Math.floor(13 * node.scale))}px monospace`;
+          ctx.font = getFont(node.scale);
           ctx.fillStyle = `rgba(16, 185, 129, ${alpha * 0.95})`;
-          ctx.shadowBlur = 14;
-          ctx.shadowColor = "#10b981";
           ctx.fillText(node.badge, node.x + 10 * node.scale, node.y + 4 * node.scale);
         }
       });
+      ctx.shadowBlur = 0;
 
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    const start = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(render);
+    };
+    start();
 
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(resizeRAF);
     };
   }, []);
 
