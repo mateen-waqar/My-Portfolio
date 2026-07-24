@@ -29,13 +29,24 @@
 
 This repository contains the source code for my personal portfolio website — a single place to showcase who I am, what I build, and how to get in touch. It's built to be fast, responsive, and easy to maintain, using a modern Next.js + TypeScript + Tailwind stack.
 
+The site is organized into the following sections:
+
+- **Home** — landing/hero section
+- **About** — introduction and background
+- **Education** — academic background
+- **Projects** — showcase of work and case studies
+- **Services** — what I offer
+- **Contact** — get in touch via a working contact form
+
 ## ✨ Features
 
 - ⚡ Built with **Next.js App Router** for fast, optimized rendering
 - 🎨 Styled with **Tailwind CSS** and **shadcn/ui** components
+- 🌗 Dark/light theme toggle
 - 📱 Fully responsive across mobile, tablet, and desktop
 - 🧩 Modular, reusable component architecture
-- 🔍 SEO-friendly with optimized metadata
+- 📧 Working contact form powered by **Resend**
+- 🔍 SEO-friendly with optimized metadata (Open Graph tags included)
 - ✅ Linted and formatted with **ESLint** + **Prettier** for consistent code quality
 - 🚀 Deployed on **Vercel** with continuous deployment from `main`
 
@@ -108,7 +119,11 @@ Copy `.env.example` to `.env.local` and fill in the required values before runni
 cp .env.example .env.local
 ```
 
-> See `.env.example` for the full list of variables required (e.g. API keys, contact form service credentials).
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Public site URL, used for metadata and Open Graph tags |
+| `RESEND_API_KEY` | API key for [Resend](https://resend.com), used to send contact form submissions |
+| `CONTACT_TO_EMAIL` | The email address contact form submissions are sent to |
 
 ## 📜 Available Scripts
 
