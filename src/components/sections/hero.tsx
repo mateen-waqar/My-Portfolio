@@ -62,9 +62,6 @@ export function Hero() {
       {/* 3D Tech Data Network Background */}
       <Hero3DBackground />
 
-      {/* Base Grid */}
-      <div className="bg-grid absolute inset-0 opacity-[0.35] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_20%,black,transparent)]" />
-
       {/* Ambient Gradient Emerald Blobs */}
       <Parallax offset={40} className="absolute inset-0">
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-[#10b981]/10 blur-[140px]" />
