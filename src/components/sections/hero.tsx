@@ -8,9 +8,9 @@ import { ArrowDown, ArrowUpRight, FileDown } from "lucide-react";
 import { SITE } from "@/constants/site";
 import { Button } from "@/components/ui/button";
 import { Magnetic } from "@/components/common/magnetic";
-import { SocialLinks } from "@/components/common/social-links";
 import { Parallax } from "@/components/common/parallax";
 import { Hero3DBackground } from "@/components/common/hero-3d-background";
+import { SocialLinks } from "@/components/common/social-links";
 
 export function Hero() {
   const sectionRef = React.useRef<HTMLElement>(null);

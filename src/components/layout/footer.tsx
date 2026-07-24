@@ -2,7 +2,6 @@
 
 import { ArrowUp } from "lucide-react";
 import { NAV_LINKS, SITE } from "@/constants/site";
-import { SocialLinks } from "@/components/common/social-links";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -16,10 +15,9 @@ export function Footer() {
               {SITE.shortName}
               <span className="text-accent">.</span>
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
+            <p className="mt-3 text-base font-semibold leading-relaxed text-foreground">
               {SITE.tagline}
             </p>
-            <SocialLinks className="mt-6" />
           </div>
 
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
