@@ -156,7 +156,7 @@ export function Hero() {
             <Magnetic>
               <Button variant="outline" size="lg" asChild className="border-[#10b981]/30 hover:border-[#10b981] hover:text-[#10b981]">
                 <a href="/resume.pdf" download>
-                  Resume
+                  resume
                   <FileDown className="size-4" />
                 </a>
               </Button>
