@@ -14,9 +14,9 @@ export const SITE = {
   githubUsername: "mateen-waqar",
   linkedin: "https://www.linkedin.com/in/mateen-waqar-4a325a330",
   company: { name: "Sanestix", role: "Co-Founder", url: "https://www.sanestix.com" },
-  resumeUrl: "/resume.pdf", // TODO: drop a real resume PDF into /public
+  resumeUrl: "/resume.pdf",
   availability: "Available for new opportunities",
-  domain: "mateenuddin.dev", // TODO: replace with real domain
+  domain: "mateenwaqar-portfolio.vercel.app", 
   stats: { experienceYears: 1, happyClients: 10, projectsCompleted: 10 },
 } as const;
 
