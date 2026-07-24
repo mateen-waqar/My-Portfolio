@@ -54,7 +54,7 @@ export function SocialLinks({ className }: { className?: string }) {
             rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
             aria-label={link.label}
             title={link.label}
-            className="group relative flex size-11 items-center justify-center rounded-full border border-[#10b981]/40 bg-[#0a120e]/90 text-[#10b981] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-[#10b981] hover:bg-[#10b981] hover:text-[#030706] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+            className="group relative flex size-11 items-center justify-center rounded-full border border-[#10b981]/40 bg-surface/90 text-[#10b981] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-[#10b981] hover:bg-[#10b981] hover:text-white dark:hover:text-[#030706] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]"
           >
             <Icon className="size-5 transition-transform duration-300 group-hover:scale-105" />
           </a>
