@@ -101,7 +101,7 @@ export function Hero() {
                 />
               </div>
             </div>
-            <div className="relative -mt-3 inline-flex items-center gap-2 rounded-full border border-[#10b981]/30 bg-[#0a120e]/90 px-3.5 py-1.5 shadow-lg backdrop-blur-md">
+            <div className="relative -mt-3 inline-flex items-center gap-2 rounded-full border border-[#10b981]/30 bg-surface/90 px-3.5 py-1.5 shadow-lg backdrop-blur-md">
               <span className="relative flex size-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
