@@ -97,6 +97,18 @@
   border-color: var(--border);
 }
 
+@utility container-px {
+  padding-inline: 1.25rem;
+
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding-inline: 3rem;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
